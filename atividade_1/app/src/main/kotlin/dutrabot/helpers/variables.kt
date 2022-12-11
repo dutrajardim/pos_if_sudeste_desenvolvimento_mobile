@@ -1,5 +1,6 @@
 package dutrabot.helpers
 
+// lista de respostas
 val responses = mapOf(
     "Certamente." to 1,
     "Opa! Calma aí!" to 2,

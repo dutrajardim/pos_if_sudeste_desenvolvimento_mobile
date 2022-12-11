@@ -6,13 +6,18 @@ package dutrabot
 import dutrabot.helpers.mapQuestions
 import dutrabot.helpers.startBot
 
-
+/**
+ * Função responsável por inicializar a aplicação
+ *
+ * @param args Argumentos de inicialização
+ */
 fun main(args: Array<String>) {
-    if (args.isNotEmpty() && args[0] == "map") {
+    // verifica por argumento map na primeira posição
+    if (args.isNotEmpty() && args[0] == "map") { // caso seja passado é executado script de mapeamento
         println("Mapping questions...")
         mapQuestions()
         println("Done!")
-    } else {
+    } else { // caso não encontre o argumento map, é iniciado a aplicação robô
         println("Stating app...")
         startBot()
         println("Done!")
