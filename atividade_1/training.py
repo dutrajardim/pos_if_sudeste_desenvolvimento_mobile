@@ -1,7 +1,6 @@
 from sklearn.neural_network import MLPClassifier
 import csv
 import json
-import numpy
 
 reader = csv.reader(open('app/data/mapped.csv'), delimiter=";")
 
