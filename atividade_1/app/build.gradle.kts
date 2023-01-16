@@ -7,6 +7,7 @@
  */
 
 import com.adarshr.gradle.testlogger.theme.ThemeType
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
@@ -17,6 +18,7 @@ plugins {
 
     // Apply the application plugin to add support for building a CLI application in Java.
     application
+    kotlin("jvm") version "1.8.0"
 }
 
 repositories {
@@ -68,4 +70,12 @@ testlogger {
     showPassedStandardStreams = true
     showSkippedStandardStreams = true
     showFailedStandardStreams = true
+}
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.kotlinOptions {
+    jvmTarget = "1.8"
+}
+val compileTestKotlin: KotlinCompile by tasks
+compileTestKotlin.kotlinOptions {
+    jvmTarget = "1.8"
 }

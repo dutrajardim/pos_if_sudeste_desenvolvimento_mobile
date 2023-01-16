@@ -1,0 +1,25 @@
+{
+    "TableName": "ifbot_Training",
+    "AttributeDefinitions": [
+        {
+            "AttributeName": "Tag",
+            "AttributeType": "S"
+        }
+    ],
+    "KeySchema": [
+        {
+            "AttributeName": "Tag",
+            "KeyType": "HASH"
+        }
+    ],
+    "ProvisionedThroughput": {
+        "ReadCapacityUnits": 1,
+        "WriteCapacityUnits": 1
+    },
+    "Tags": [
+        {
+            "Key": "app",
+            "Value": "ifbot"
+        }
+    ]
+}

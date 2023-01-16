@@ -16,3 +16,4 @@ As atividades realizadas serão dispostas com base na estrutura que segue:
 
 Descrição das atividades:
 * [Primaira atividade](atividade_1/README.md)
+* [Segunda atividade](atividade_2/README.md)

@@ -1,0 +1,40 @@
+{
+  "auth": {
+    "plugins": {
+      "awsCognitoAuthPlugin": {
+        "CognitoUserPool": {
+          "Default": {
+            "PoolId": "sa-east-1_XXXXXXXXXXXXXXXX",
+            "AppClientId": "XXXXXXXXXXXXXXXX",
+            "Region": "sa-east-1"
+          }
+        },
+        "CredentialsProvider": {
+          "CognitoIdentity": {
+            "Default": {
+              "PoolId": "sa-east-1_XXXXXXXXXXXXXXXX",
+              "Region": "sa-east-1"
+            }
+          }
+        },
+        "Auth": {
+          "Default": {
+            "authenticationFlowType": "USER_SRP_AUTH"
+          }
+        }
+      }
+    }
+  },
+  "api": {
+    "plugins": {
+      "awsAPIPlugin": {
+        "bot-api": {
+          "endpointType": "REST",
+          "endpoint": "https://XXXXXXXXXXXXXXXX.execute-api.sa-east-1.amazonaws.com/Staging",
+          "region": "sa-east-1",
+          "authorizationType": "AMAZON_COGNITO_USER_POOLS"
+        }
+      }
+    }
+  }
+}

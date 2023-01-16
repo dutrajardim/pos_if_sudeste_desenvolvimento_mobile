@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">IF Bot</string>
+    <string name="tag">Atividade do curso de Pós Graduação em desenvilvomento Web e Mobile</string>
+    <string name="e_mail">Email</string>
+    <string name="login">Login</string>
+    <string name="username">Nome de usuário</string>
+    <string name="password">Senha</string>
+    <string name="register">Registrar</string>
+    <string name="re_type_password">Redigite a senha</string>
+    <string name="your_name">Nome completo</string>
+    <string name="swipe_left_for_register">Deslize para a esquerda para registrar</string>
+    <string name="swipe_right_for_login">Deslize para a direita para registrar</string>
+    <string name="confimation_code">Código</string>
+    <string name="confirm">Confirmar</string>
+    <string name="message">Mensagem</string>
+</resources>

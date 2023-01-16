@@ -1,0 +1,37 @@
+{
+    "TableName": "ifbot_Messages",
+    "AttributeDefinitions": [
+        {
+            "AttributeName": "Chat",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "CreatedAt",
+            "AttributeType": "N"
+        }
+    ],
+    "KeySchema": [
+        {
+            "AttributeName": "Chat",
+            "KeyType": "HASH"
+        },
+        {
+            "AttributeName": "CreatedAt",
+            "KeyType": "RANGE"
+        }
+    ],
+    "ProvisionedThroughput": {
+        "ReadCapacityUnits": 1,
+        "WriteCapacityUnits": 1
+    },
+    "StreamSpecification": {
+        "StreamEnabled": true,
+        "StreamViewType": "NEW_IMAGE"
+    },
+    "Tags": [
+        {
+            "Key": "app",
+            "Value": "ifbot"
+        }
+    ]
+}

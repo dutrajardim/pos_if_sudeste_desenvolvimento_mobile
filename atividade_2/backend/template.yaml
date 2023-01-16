@@ -1,0 +1,240 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Serverless API created for bot application. The criation of this bot app
+  is an task requested in the IF Graduation Course in web development
+
+Parameters:
+  USERPOOLARN:
+    Description: The arn of an existing Cognito UserPool
+    Type: String
+  BUCKETNAME:
+    Default: dj-ifbot
+    Description: The name of the buckat to read and save models
+    Type: String
+  TRAININGTABLENAME:
+    Default: ifbot_Training
+    Description: The name of the buckat to read and save models
+    Type: String
+  MESSAGESTABLENAME:
+    Default: ifbot_Messages
+    Description: The name of the buckat to read and save messages
+    Type: String
+  DYNAMOURL:
+    Type: String
+    Description: URL to access dynamodb.
+
+Resources:
+  BotApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: Bot API
+      StageName: Staging
+      Cors: "'*'"
+      Auth:
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: !Ref USERPOOLARN
+      Tags:
+        App: ifbot
+
+  listBots:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: api
+      Handler: src/listBots.handler
+      Runtime: nodejs18.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: A GET method to get a list of trained bots
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref TRAININGTABLENAME
+      Environment:
+        Variables:
+          TRAINING_TABLE_NAME: !Ref TRAININGTABLENAME
+          DYNAMOBDB_ENDPOINT: !Ref DYNAMOURL
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /bots
+            Method: GET
+            RestApiId: !Ref BotApiGateway
+            Auth:
+              Authorizer: CognitoAuthorizer
+      Tags:
+        App: ifbot
+
+  listBotChatMessages:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: api
+      Handler: src/listBotChatMessages.handler
+      Runtime: nodejs18.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: A GET method to list a Bot Chat messages
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref MESSAGESTABLENAME
+      Environment:
+        Variables:
+          MESSAGES_TABLE_NAME: !Ref MESSAGESTABLENAME
+          DYNAMOBDB_ENDPOINT: !Ref DYNAMOURL
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /bots/{tag}/messages
+            Method: GET
+            RestApiId: !Ref BotApiGateway
+            Auth:
+              Authorizer: CognitoAuthorizer
+      Tags:
+        App: ifbot
+
+  askBot:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: api
+      Handler: src/askBot.handler
+      Runtime: nodejs18.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: A post method to send a message to a Bot
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref MESSAGESTABLENAME
+      Environment:
+        Variables:
+          MESSAGES_TABLE_NAME: !Ref MESSAGESTABLENAME
+          DYNAMOBDB_ENDPOINT: !Ref DYNAMOURL
+      Events:
+        AskBot:
+          Type: Api
+          Properties:
+            Path: /bots/{tag}/messages
+            Method: POST
+            RestApiId: !Ref BotApiGateway
+            Auth:
+              Authorizer: CognitoAuthorizer
+      Tags:
+        App: ifbot
+
+  botTrain:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda/src
+      Handler: bot_train.handler
+      Runtime: python3.9
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: Create a model
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref BUCKETNAME
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TRAININGTABLENAME
+      Environment:
+        Variables:
+          BUCKET_NAME: !Ref BUCKETNAME
+          TRAINING_TABLE_NAME: !Ref TRAININGTABLENAME
+          DYNAMOBDB_ENDPOINT: !Ref DYNAMOURL
+      Events:
+        TrainBot:
+          Type: Api
+          Properties:
+            Path: /training
+            Method: POST
+            RestApiId: !Ref BotApiGateway
+            Auth:
+              Authorizer: CognitoAuthorizer
+      Tags:
+        App: ifbot
+
+  botAnswer:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda/src
+      Handler: bot_answer.handler
+      Runtime: python3.9
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: Simple bot answer
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref BUCKETNAME
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TRAININGTABLENAME
+        - DynamoDBCrudPolicy:
+            TableName: !Ref MESSAGESTABLENAME
+      Environment:
+        Variables:
+          BUCKET_NAME: !Ref BUCKETNAME
+          TRAINING_TABLE_NAME: !Ref TRAININGTABLENAME
+          MESSAGES_TABLE_NAME: !Ref MESSAGESTABLENAME
+          DYNAMOBDB_ENDPOINT: !Ref DYNAMOURL
+      Events:
+        BotAnswer:
+          Type: DynamoDB
+          Properties:
+            Stream: !GetAtt ifbotMessagesTable.StreamArn
+            StartingPosition: TRIM_HORIZON
+            BatchSize: 5
+
+  # DynamoDB table to store item: {id: ID, url: URL}
+  ifbotTrainingTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref TRAININGTABLENAME
+      AttributeDefinitions:
+        - AttributeName: Tag
+          AttributeType: S
+      KeySchema:
+        - AttributeName: Tag
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      Tags:
+        - Key: App
+          Value: ifbot
+
+  ifbotMessagesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref MESSAGESTABLENAME
+      AttributeDefinitions:
+        - AttributeName: Chat
+          AttributeType: S
+        - AttributeName: CreatedAt
+          AttributeType: N
+      KeySchema:
+        - AttributeName: Chat
+          KeyType: HASH
+        - AttributeName: CreatedAt
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
+      Tags:
+        - Key: App
+          Value: ifbot
+
+Outputs:
+  BotApiGateway:
+    Description: "API Gateway endpoint URL for Staging stage"
+    Value: !Sub "https://${BotApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Staging/"

@@ -1,0 +1,27 @@
+{
+    "httpMethod": "GET",
+    "pathParameters": {
+        "tag": "SimpleBot"
+    },
+    "requestContext": {
+        "resourceId": "691tlm",
+        "authorizer": {
+            "claims": {
+                "sub": "",
+                "email_verified": "true",
+                "iss": "",
+                "cognito:username": "rafaeljardim",
+                "origin_jti": "",
+                "aud": "",
+                "event_id": "",
+                "token_use": "id",
+                "auth_time": "1673389470",
+                "name": "Rafael Dutra Jardim",
+                "exp": "Tue Jan 10 23:24:30 UTC 2023",
+                "iat": "Tue Jan 10 22:24:30 UTC 2023",
+                "jti": "",
+                "email": "rafaeldjardim@gmail.com"
+            }
+        }
+    }
+}
