@@ -18,7 +18,7 @@ import com.amplifyframework.core.Amplify
 import com.amplifyframework.core.Amplify.AlreadyConfiguredException
 import java.util.concurrent.CompletableFuture
 
-private const val NUM_PAGES = 3
+private const val NUM_PAGES = 2
 
 class MainActivity : AppCompatActivity() {
 
