@@ -55,13 +55,12 @@ def get_answer(question, model_key):
 
 
 def save_message(data: dict) -> None:
-    print(data)
-    # dyn_resource = helpers.get_dynamodb_resource()
+    dyn_resource = helpers.get_dynamodb_resource()
 
-    # messages_table_name = os.getenv("MESSAGES_TABLE_NAME")
-    # messages_table = dyn_resource.Table(messages_table_name)
+    messages_table_name = os.getenv("MESSAGES_TABLE_NAME")
+    messages_table = dyn_resource.Table(messages_table_name)
 
-    # response = messages_table.put_item(Item=data)
+    response = messages_table.put_item(Item=data)
 
 
 def handler(event: dict, context: dict) -> None:
